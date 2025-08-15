@@ -1,0 +1,204 @@
+:root {
+    font-family: sans-serif;
+    font-size: 16px;
+
+    --app-max-width: 600px;
+}
+
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    & > #app-cmp-main-content {
+        flex: 1 0 auto;
+    }
+}
+
+.app-cl-number,
+input[type="number"] {
+    font-family: monospace;
+    text-align: right;
+}
+
+.app-cl-code {
+    color: blue;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.app-cl-options-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    column-gap: 2ch;
+}
+
+.app-ly-max-width {
+    width: min(var(--app-max-width), 100%);
+}
+
+table.app-cmp-data-list {
+    border-collapse: collapse;
+
+    width: 100%;
+
+    & > thead {
+        background-color: rgba(128, 128, 128, 0.75);
+    }
+
+    &,
+    & > * > tr > :is(th, td) {
+        border: 1px solid black;
+    }
+}
+
+.app-cmp-form-detail {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+    row-gap: 0.5em;
+
+    & > :is(label, .app-cl-label) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-weight: bold;
+    }
+}
+
+.app-cmp-form-actions {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    column-gap: 8px;
+
+    margin-top: 1em;
+}
+
+.app-cmp-search-form {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    column-gap: 8px;
+
+    margin-bottom: 1em;
+
+    & > .app-cmp-form-detail {
+        flex: 1 0 auto;
+    }
+
+    & > .app-cmp-form-actions {
+        margin: 0px;
+        padding: 0px;
+        align-items: center;
+    }
+}
+
+dl.app-cmp-data-detail {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    row-gap: 8px;
+}
+
+dl.app-cmp-data-detail > dt {
+    display: flex;
+    flex-direction: row;
+
+    font-weight: bold;
+}
+
+dl.app-cmp-data-detail > dt:not(:empty)::after {
+    content: "::";
+    padding-left: 1ch;
+    padding-right: 1ch;
+
+    margin-left: auto;
+}
+
+@layer {
+    #app-cmp-main-header,
+    #app-cmp-main-content,
+    #app-cmp-main-footer {
+        box-sizing: border-box;
+    }
+
+    #app-cmp-main-header,
+    #app-cmp-main-footer {
+        text-align: center;
+    }
+
+    #app-cmp-main-header {
+        padding: 8px 0px;
+    }
+
+    #app-cmp-main-content {
+        max-width: var(--app-max-width);
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 8px;
+        padding-right: 8px;
+
+        & > header {
+            text-align: center;
+        }
+
+        @layer {
+            a {
+                text-decoration: none;
+                color: inherit;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+/* Additional */
+.app-cmp-links {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    column-gap: 8px;
+
+    color: blue;
+    font-weight: bold;
+
+    & > * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+
+        border: 1px solid currentColor;
+        border-radius: 4px;
+    }
+
+    a {
+        display: block;
+        box-sizing: border-box;
+
+        padding: 0.5em 1ch 0.5em 1ch;
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.75);
+        }
+    }
+}
