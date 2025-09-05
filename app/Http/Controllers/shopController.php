@@ -34,6 +34,14 @@ class shopController extends SearchableController
     }
 
     #[\Override]
+    function applyWhereToFilterByTerm(Builder $query, string $word): void {
+        $query
+            ->where('code', 'LIKE', "%{$word}%")
+            ->orWhere('name', 'LIKE', "%{$word}%")
+            ->orWhere('owner', 'LIKE', "%{$word}%");
+        }
+
+    #[\Override]
     function filter(Builder $query, array $criteria): Builder
     {
         $query = parent::filter($query, $criteria);

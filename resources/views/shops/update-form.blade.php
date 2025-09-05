@@ -26,12 +26,12 @@
         </label><br>
 
         <b>Longitude</b>
-        <input type="number" name="longtitude" step="any" required value="{{ $shops->longitude }}">
+        <input type="number" name="longitude" step="any" required value="{{ $shops->longitude }}">
         </label><br>
 
         <label>
             <b>Address</b>
-            <textarea name="Address" required cols="80" rows="10">{{ $shops->address }}</textarea>
+            <textarea name="address" required cols="80" rows="10">{{ $shops->address }}</textarea>
         </label><br>
 
         <button type="submit">Update</button>
