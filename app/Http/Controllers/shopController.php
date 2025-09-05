@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\shop;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ProductController extends SearchableController
+class shopController extends SearchableController
 {
     const int MAX_ITEMS = 5;
 
     #[\Override]
     function getQuery(): Builder
     {
-        return Product::orderBy('code');
+        return shop::orderBy('code');
     }
 
     #[\Override]
@@ -33,31 +33,10 @@ class ProductController extends SearchableController
         ];
     }
 
-    function filterByPrice(
-        Builder $query,
-        ?float $minPrice,
-        ?float $maxPrice
-    ): Builder {
-        if ($minPrice !== null) {
-            $query->where('price', '>=', $minPrice);
-        }
-
-        if ($maxPrice !== null) {
-            $query->where('price', '<=', $maxPrice);
-        }
-
-        return $query;
-    }
-
     #[\Override]
     function filter(Builder $query, array $criteria): Builder
     {
         $query = parent::filter($query, $criteria);
-        $query = $this->filterByPrice(
-            $query,
-            $criteria['minPrice'],
-            $criteria['maxPrice'],
-        );
 
         return $query;
     }
@@ -67,48 +46,48 @@ class ProductController extends SearchableController
         $criteria = $this->prepareCriteria($request->getQueryParams());
         $query = $this->search($criteria);
 
-        return view('products.list', [
-            'products' => $query->paginate(self::MAX_ITEMS),
+        return view('shops.list', [
+            'shops' => $query->paginate(self::MAX_ITEMS),
             'criteria' => $criteria,
         ]);
     }
 
     function view(string $productCode): View
     {
-        $product = Product::where('code', $productCode)->firstOrFail();
-        return view('products.view', [
-            'product' => $product,
+        $shop = shop::where('code', $productCode)->firstOrFail();
+        return view('shops.view', [
+            'shops' => $shop,
         ]);
     }
 
     function showCreateForm(): View
     {
-        return view('products.create-form');
+        return view('shops.create-form');
     }
 
     function create(ServerRequestInterface $request): RedirectResponse
     {
-        $product = Product::create($request->getParsedBody());
-        return redirect()->route('products.list');
+        $shop = shop::create($request->getParsedBody());
+        return redirect()->route('shops.list');
     }
 
     function updateForm(string $productCode): View
     {
-        $product = $this->find($productCode);
+        $shop = $this->find($productCode);
 
-        return view('products.update-form', [
-            'product' => $product,
+        return view('shops.update-form', [
+            'shops' => $shop,
         ]);
     }
 
     function update(ServerRequestInterface $request, string $productCode): RedirectResponse
     {
-        $product = $this->find($productCode);
-        $product->fill($request->getParsedBody());
-        $product->save();
+        $shops = $this->find($productCode);
+        $shops->fill($request->getParsedBody());
+        $shops->save();
 
-        return redirect()->route('products.view', [
-            'product' => $product->code,
+        return redirect()->route('shops.view', [
+            'shops' => $shops->code,
         ]);
     }
 
@@ -117,6 +96,6 @@ class ProductController extends SearchableController
         $product = $this->find($productCode);
         $product->delete();
 
-        return redirect()->route('products.list');
+        return redirect()->route('shops.list');
     }
 }

@@ -2,15 +2,35 @@
     'title' => $product->name,
 ])
 
+@section('header')
+    <nav>
+        <form action="{{ route('products.delete', [
+            'product' => $product->code,
+        ]) }}" method="post" id="app-form-delete">
+            @csrf
+        </form>
+        <ul class="app-cmp-links">
+            <li>
+                <a href="{{ route('products.update-form', [
+                    'product' => $product->code,
+                ]) }}">Update</a>
+            </li>
+            <li>
+                <button type="submit" form="app-form-delete" class="app-cl-link">Delete</button>
+            </li>
+        </ul>
+    </nav>
+@endsection
+
 @section('content')
     <dl>
         <dt>Code</dt>
         <dd>
-        {{ $product->code }}
+            {{ $product->code }}
         </dd>
         <dt>Name</dt>
         <dd>
-        {{ $product->name }}
+            {{ $product->name }}
         </dd>
         <dt>Price</dt>
         <dd>
