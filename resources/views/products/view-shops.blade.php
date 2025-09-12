@@ -1,17 +1,17 @@
 @extends('shops.main', [
-    'title' => 'List',
+    'title' => $product->code. ' - shop',
 ])
 
 @section('header')
     <search>
-        <form action="{{ route('shops.list') }}" method="get" class="app-cmp-search-form">
+        <form action="{{ route('products.view-shops',['product' => $productCode]) }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
             </label><br>
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('shops.list') }}">
+            <a href="{{ route('products.view-shops',['product' => $productCode]) }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
@@ -19,7 +19,7 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
-            <li><a href="{{ route('shops.create-form') }}">New Shops</a></li>
+            <li><a href="{{ route('products.view',['product' => $productCode,]) }}">Back</a></li>
         </ul>
         <div>
             {{ $shops->withQueryString()->links() }}

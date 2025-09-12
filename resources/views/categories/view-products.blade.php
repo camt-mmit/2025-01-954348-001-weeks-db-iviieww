@@ -1,10 +1,11 @@
-@extends('products.main', [
-    'title' => 'List',
+@extends('categories.main', [
+    'title' => $categories->code . ' - product',
 ])
+
 
 @section('header')
     <search>
-        <form action="{{ route('products.list') }}" method="get" class="app-cmp-search-form">
+        <form action="{{ route('categories.view-products',['catCode' => $categories->code]) }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
@@ -19,7 +20,7 @@
             </label><br />
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('products.list') }}">
+            <a href="{{ route('categories.list') }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
@@ -27,7 +28,7 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
-            <li><a href="{{ route('products.create-form') }}">New Products</a></li>
+            <li><a href="{{ route('categories.view-products',['catCode' => $categories->code]) }}">Back</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
@@ -35,8 +36,9 @@
     </nav>
 @endsection
 
+
 @section('content')
-    <table class="app-cmp-data-list">
+<table class="app-cmp-data-list">
         <thead>
             <tr>
                 <th>Code</th>

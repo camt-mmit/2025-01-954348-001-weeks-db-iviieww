@@ -1,17 +1,17 @@
-@extends('shops.main', [
+@extends('categories.main', [
     'title' => 'List',
 ])
 
 @section('header')
     <search>
-        <form action="{{ route('shops.list') }}" method="get" class="app-cmp-search-form">
+        <form action="{{ route('categories.list') }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
             </label><br>
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('shops.list') }}">
+            <a href="{{ route('categories.list') }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
@@ -19,10 +19,10 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
-            <li><a href="{{ route('shops.create-form') }}">New Shops</a></li>
+            <li><a href="{{ route('categories.create-form') }}">New Categories</a></li>
         </ul>
         <div>
-            {{ $shops->withQueryString()->links() }}
+            {{ $categories->withQueryString()->links() }}
         </div>
     </nav>
 @endsection
@@ -34,21 +34,19 @@
             <tr>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Owner</th>
                 <th>No. of Products</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($shops as $shops)
+            @foreach ($categories as $category)
                 <tr>
                     <td>
-                        <a href="{{ Route('shops.view', ['shops' => $shops->code])}}">
-                            {{ $shops->code }}
+                        <a href="{{ Route('categories.view', ['catCode' => $category->code])}}">
+                            {{ $category->code }}
                         </a>
                     </td>
-                    <td>{{ $shops->name }}</td>
-                    <td>{{ $shops->owner }}</td>
-                    <td>{{ $shops->products_count }}</td>
+                    <td>{{ $category->name }}</td>
+                    <td>{{ $category->products_count }}</td>
                 </tr>
                 @endforeach
         </tbody>

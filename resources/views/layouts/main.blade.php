@@ -15,6 +15,7 @@
             <ul class="app-cmp-links">
                 <li><a href="{{route('products.list')}}">Product</a></li>
                 <li><a href="{{route('shops.list')}}">shops</a></li>
+                <li><a href="{{route('categories.list')}}">Categories</a></li>
             </ul>
         </nav>
     </header>

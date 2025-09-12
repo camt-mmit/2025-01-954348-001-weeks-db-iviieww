@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\shop;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -35,14 +36,15 @@ class shopController extends SearchableController
 
     #[\Override]
     function applyWhereToFilterByTerm(Builder $query, string $word): void {
+        // parent::applyWhereToFilterByTerm(Builder $query,string $word) ##can make this same.
         $query
             ->where('code', 'LIKE', "%{$word}%")
-            ->orWhere('name', 'LIKE', "%{$word}%")
+            ->orWhere('name', 'LIKE', "%{$word}%") 
             ->orWhere('owner', 'LIKE', "%{$word}%");
         }
 
     #[\Override]
-    function filter(Builder $query, array $criteria): Builder
+    function filter(Builder|Relation $query, array $criteria): Builder|Relation
     {
         $query = parent::filter($query, $criteria);
 
@@ -52,7 +54,7 @@ class shopController extends SearchableController
     function list(ServerRequestInterface $request): View
     {
         $criteria = $this->prepareCriteria($request->getQueryParams());
-        $query = $this->search($criteria);
+        $query = $this->search($criteria)->withCount('products');
 
         return view('shops.list', [
             'shops' => $query->paginate(self::MAX_ITEMS),
@@ -105,5 +107,25 @@ class shopController extends SearchableController
         $product->delete();
 
         return redirect()->route('shops.list');
+    }
+
+    function viewProducts(
+        ServerRequestInterface $request,
+        ProductController $productController,
+        string $shopCode
+    ): View {
+        $product = $this->find($shopCode);
+        $criteria = $productController->prepareCriteria($request->getQueryParams());
+        $query = $productController
+
+            ->filter($product->products(), $criteria)
+            ->with('category')
+            ->withCount('shops');
+        return view('shops.view-products', [
+            'product' => $product,
+            'criteria' => $criteria,
+            'shop' => $shopCode,
+            'products' => $query->paginate($productController::MAX_ITEMS),
+        ]);
     }
 }

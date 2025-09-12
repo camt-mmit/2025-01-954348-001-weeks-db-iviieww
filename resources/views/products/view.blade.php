@@ -11,6 +11,11 @@
         </form>
         <ul class="app-cmp-links">
             <li>
+                <a href="{{ route('products.view-shops', [
+                    'product' => $product->code,
+                ]) }}">View Shops</a>
+            </li>
+            <li>
                 <a href="{{ route('products.update-form', [
                     'product' => $product->code,
                 ]) }}">Update</a>
@@ -32,6 +37,8 @@
         <dd>
             {{ $product->name }}
         </dd>
+        <dt>Categories</dt>
+        <dd>{{ $product->category->name }}</dd>
         <dt>Price</dt>
         <dd>
             <span class="app-cl-number">{{ $product->price }}</span>
