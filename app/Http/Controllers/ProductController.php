@@ -41,7 +41,7 @@ class ProductController extends SearchableController
         parent::applyWhereToFilterByTerm($query, $word);
 
         $query
-            ->orWhereHas('category', function(Builder $q) use ($word) {
+            ->orWhereHas('category', function (Builder $q) use ($word) {
                 $q->where('name', 'LIKE', "%{$word}%");
             });
     }
@@ -94,35 +94,55 @@ class ProductController extends SearchableController
         ]);
     }
 
-    function showCreateForm(): View
-    {
-        $category = category::get();
+    function showCreateForm(
+        CategoryController $categoryController,
+    ): View {
+        $categories = $categoryController->getQuery()->get();
 
         return view('products.create-form', [
-            'category' => $category,
+            'categories' => $categories,
         ]);
     }
 
-    function create(ServerRequestInterface $request): RedirectResponse
-    {
-        $product = Product::create($request->getParsedBody());
+    function create(
+        ServerRequestInterface $request,
+        CategoryController $categoryController,
+    ): RedirectResponse {
+        $data = $request->getParsedBody();
+        $category = $categoryController->find($data['category']);
+
+        $product = new Product();
+        $product->fill($data);
+        $product->category()->associate($category);
+        $product->save();
+
         return redirect()->route('products.list');
     }
 
-    function updateForm(string $productCode): View
-    {
+    function updateForm(
+        CategoryController $categoryController,
+        string $productCode,
+    ): View {
         $product = $this->find($productCode);
-        $category = category::get();
+        $categories = $categoryController->getQuery()->get();
+
         return view('products.update-form', [
             'product' => $product,
-            'category' => $category,
+            'categories' => $categories,
         ]);
     }
 
-    function update(ServerRequestInterface $request, string $productCode): RedirectResponse
-    {
+    function update(
+        ServerRequestInterface $request,
+        CategoryController $categoryController,
+        string $productCode,
+    ): RedirectResponse {
+        $data = $request->getParsedBody();
         $product = $this->find($productCode);
-        $product->fill($request->getParsedBody());
+        $category = $categoryController->find($data['category']);
+
+        $product->fill($data);
+        $product->category()->associate($category);
         $product->save();
 
         return redirect()->route('products.view', [

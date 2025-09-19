@@ -18,11 +18,11 @@
         </label><br>
 
         <b>Category</b>
-        <select name="category_id" id="category">
-            @foreach ($category as $categories)
-                <option value="{{ $categories->id }}"
-                    @selected($product->category->code === $categories->code)
-                    >[{{ $categories->code }}] {{ $categories->name }}</option>
+        <select name="category" id="category">
+            @foreach ($categories as $category)
+                <option value="{{ $category->code }}"
+                    @selected($product->category->code === $category->code)
+                    >[{{ $category->code }}] {{ $category->name }}</option>
             @endforeach
         </select><br>
 

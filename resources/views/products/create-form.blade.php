@@ -15,10 +15,10 @@
             <input type="name" name="name" required>
         </label><br>
         <b>Category</b>
-        <select name="category_id" id="category">
+        <select name="category" id="category">
             <option value="">--->please Select<---</option>
-            @foreach ($category as $categories)
-                <option value="{{ $categories->id }}">[{{ $categories->code }}] {{ $categories->name }}</option>
+            @foreach ($categories as $category)
+                <option value="{{ $category->code }}">[{{ $category->code }}] {{ $category->name }}</option>
             @endforeach
         </select><br>
             <b>Price</b>
