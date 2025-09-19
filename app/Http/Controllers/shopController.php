@@ -35,13 +35,14 @@ class shopController extends SearchableController
     }
 
     #[\Override]
-    function applyWhereToFilterByTerm(Builder $query, string $word): void {
+    function applyWhereToFilterByTerm(Builder $query, string $word): void
+    {
         // parent::applyWhereToFilterByTerm(Builder $query,string $word) ##can make this same.
         $query
             ->where('code', 'LIKE', "%{$word}%")
-            ->orWhere('name', 'LIKE', "%{$word}%") 
+            ->orWhere('name', 'LIKE', "%{$word}%")
             ->orWhere('owner', 'LIKE', "%{$word}%");
-        }
+    }
 
     #[\Override]
     function filter(Builder|Relation $query, array $criteria): Builder|Relation
@@ -112,20 +113,81 @@ class shopController extends SearchableController
     function viewProducts(
         ServerRequestInterface $request,
         ProductController $productController,
-        string $shopCode
+        string $shop
     ): View {
-        $product = $this->find($shopCode);
+        $shop = $this->find($shop);
         $criteria = $productController->prepareCriteria($request->getQueryParams());
         $query = $productController
 
-            ->filter($product->products(), $criteria)
+            ->filter($shop->products(), $criteria)
             ->with('category')
             ->withCount('shops');
         return view('shops.view-products', [
-            'product' => $product,
             'criteria' => $criteria,
-            'shop' => $shopCode,
+            'shop' => $shop,
             'products' => $query->paginate($productController::MAX_ITEMS),
         ]);
+    }
+
+    function showAddProductsForm(
+        ServerRequestInterface $request,
+        ProductController $ProductController,
+        string $shopCode
+    ): View {
+        $shop = $this->find($shopCode);
+        $criteria = $ProductController->prepareCriteria($request->getQueryParams());
+        $query = $ProductController
+            ->getQuery()
+            ->whereDoesntHave(
+                'shops',
+                function (Builder $innerQuery) use ($shop) {
+                    return $innerQuery->where('code', $shop->code);
+                },
+            );
+        $query = $ProductController->filter($query, $criteria)->withCount('shops');
+        return view('shops.add-products-form', [
+            'criteria' => $criteria,
+            'shop' => $shop,
+            'products' => $query->paginate($ProductController::MAX_ITEMS),
+        ]);
+    }
+
+    function addProduct(
+        ServerRequestInterface $request,
+        ProductController $ProductController,
+        string $shopCode,
+    ): RedirectResponse {
+        // Method body
+        $shop = $this->find($shopCode);
+        $data = $request->getParsedBody();
+        // To make sure that no duplicate shop.
+        $product = $ProductController
+            ->getQuery()
+            ->whereDoesntHave(
+                'shops',
+                function (Builder $innerQuery) use ($shop) {
+                    return $innerQuery->where('code', $shop->code);
+                },
+            )
+            ->where('code', $data['products'])
+            ->firstOrFail();
+        // Add $shop to $product
+        $shop->products()->save($product);
+        return redirect()->back();
+    }
+
+    function removeProduct(
+        ServerRequestInterface $request,
+        string $shopCode,
+    ): RedirectResponse {
+        $shop = $this->find($shopCode);
+        $data = $request->getParsedBody();
+        // To get existing shop
+        $product = $shop->products()
+            ->where('code', $data['product'])
+            ->firstOrFail();
+        // Remove $shop from $product
+        $shop->products()->detach($product);
+        return redirect()->back();
     }
 }

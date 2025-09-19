@@ -1,11 +1,11 @@
 @extends('shops.main', [
-    'title' => $shop . ' - product',
+    'title' => $shop->code . ' - product',
 ])
 
 
 @section('header')
     <search>
-        <form action="{{ route('shops.view-products',['shops' => $shop,]) }}" method="get" class="app-cmp-search-form">
+        <form action="{{ route('shops.view-products', ['shops' => $shop]) }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
@@ -28,17 +28,25 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
-            <li><a href="{{ route('shops.view',['shops' => $shop,]) }}">Back</a></li>
+            <li><a href="{{ route('shops.add-products-form', ['shops' => $shop->code]) }}">Add products</a></li>
+            <li><a href="{{ route('shops.view', ['shops' => $shop]) }}">Back</a></li>
         </ul>
-        <div>
-            {{ $products->withQueryString()->links() }}
-        </div>
+
+
+        <form action="{{ route('shops.remove-product', [
+            'shops' => $shop->code,
+        ]) }}"
+            id="app-form-remove-shop" method="post">@csrf</form>
     </nav>
+
+    <div>
+        {{ $products->withQueryString()->links() }}
+    </div>
 @endsection
 
 
 @section('content')
-<table class="app-cmp-data-list">
+    <table class="app-cmp-data-list">
         <thead>
             <tr>
                 <th>Code</th>
@@ -46,6 +54,7 @@
                 <th>Categories</th>
                 <th>Price</th>
                 <th>NO. of Shops</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -60,6 +69,8 @@
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->shops_count }}</td>
+                    <td><button type="submit" form="app-form-remove-shop" name="product"
+                            value="{{ $product->code }}">remove</button></td>
                 </tr>
             @endforeach
         </tbody>

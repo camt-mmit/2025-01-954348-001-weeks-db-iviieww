@@ -1,12 +1,11 @@
-@extends('categories.main', [
-    'title' => $categories->code . ' - product',
+@extends('shops.main', [
+    'title' => $shop->code . ' - product',
 ])
 
 
 @section('header')
     <search>
-        <form action="{{ route('categories.view-products', ['catCode' => $categories->code]) }}" method="get"
-            class="app-cmp-search-form">
+        <form action="{{ route('shops.add-products-form', ['shops' => $shop->code]) }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
@@ -21,16 +20,20 @@
             </label><br />
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('categories.list') }}">
+            <a href="{{ route('products.list') }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
     </search>
 
     <nav class="app-cmp-links-bar">
+        <form action="{{ route('shops.add-products', [
+            'shops' => $shop->code,
+        ]) }}"
+            id="add-form-add-product" method="post">@csrf</form>
+
         <ul class="app-cmp-links">
-            <li><a href="{{ route('categories.add-products-form', ['catCode' => $categories->code]) }}">Add Product</a></li>
-            <li><a href="{{ route('categories.view-products', ['catCode' => $categories->code]) }}">Back</a></li>
+            <li><a href="{{ route('shops.view-products', ['shops' => $shop->code]) }}">Back</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
@@ -48,6 +51,7 @@
                 <th>Categories</th>
                 <th>Price</th>
                 <th>NO. of Shops</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -62,6 +66,8 @@
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->shops_count }}</td>
+                    <td><button type="submit" name="products" form="add-form-add-product"
+                            value="{{ $product->code }}">Add</button></td>
                 </tr>
             @endforeach
         </tbody>

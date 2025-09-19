@@ -4,7 +4,7 @@
 
 @section('header')
     <search>
-        <form action="{{ route('products.view-shops', ['product' => $productCode]) }}" method="get"
+        <form action="{{ route('products.add-shops-form', ['product' => $product->code]) }}" method="get"
             class="app-cmp-search-form">
             <label>
                 <b>Search</b>
@@ -12,25 +12,24 @@
             </label><br>
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('products.view-shops', ['product' => $productCode]) }}">
+            <a href="{{ route('products.view-shops', ['product' => $product->code]) }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
     </search>
 
     <nav class="app-cmp-links-bar">
+        <form action="{{ route('products.add-shop', [
+            'product' => $product->code,
+        ]) }}"
+            id="add-form-add-shop" method="post">@csrf</form>
+
         <ul class="app-cmp-links">
-            <li><a href="{{ route('products.add-shops-form', ['product' => $product->code]) }}">Add Shops</a></li>
-            <li><a href="{{ route('products.view', ['product' => $productCode]) }}">Back</a></li>
+            <li><a href="{{ route('products.view-shops', ['product' => $product->code]) }}">Back</a></li>
         </ul>
         <div>
             {{ $shops->withQueryString()->links() }}
         </div>
-
-        <form action="{{ route('products.remove-shop', [
-            'product' => $product->code,
-        ]) }}"
-            id="app-form-remove-shop" method="post">@csrf</form>
     </nav>
 @endsection
 
@@ -56,9 +55,8 @@
                     <td>{{ $shops->name }}</td>
                     <td>{{ $shops->owner }}</td>
                     <td>{{ $shops->products_count }}</td>
-                    <td><button type="submit" form="app-form-remove-shop" name="shop"
-                            value="{{ $shops->code }}">Remove</button>
-                    </td>
+                    <td><button type="submit" form="add-form-add-shop" name="shop"
+                            value="{{ $shops->code }}">Add</button></td>
                 </tr>
             @endforeach
         </tbody>

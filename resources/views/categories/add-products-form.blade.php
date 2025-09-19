@@ -1,11 +1,11 @@
 @extends('categories.main', [
-    'title' => $categories->code . ' - product',
+    'title' => $category->code . ' - product',
 ])
 
 
 @section('header')
     <search>
-        <form action="{{ route('categories.view-products', ['catCode' => $categories->code]) }}" method="get"
+        <form action="{{ route('categories.add-products-form', ['catCode' => $category->code]) }}" method="get"
             class="app-cmp-search-form">
             <label>
                 <b>Search</b>
@@ -28,9 +28,13 @@
     </search>
 
     <nav class="app-cmp-links-bar">
+        <form action="{{ route('categories.add-products', [
+            'catCode' => $category->code,
+        ]) }}"
+            id="add-form-add-product" method="post">@csrf</form>
+
         <ul class="app-cmp-links">
-            <li><a href="{{ route('categories.add-products-form', ['catCode' => $categories->code]) }}">Add Product</a></li>
-            <li><a href="{{ route('categories.view-products', ['catCode' => $categories->code]) }}">Back</a></li>
+            <li><a href="{{ route('categories.view-products', ['catCode' => $category->code]) }}">Back</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
@@ -48,6 +52,7 @@
                 <th>Categories</th>
                 <th>Price</th>
                 <th>NO. of Shops</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -62,6 +67,8 @@
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->shops_count }}</td>
+                    <td><button type="submit" name="products" form="add-form-add-product"
+                            value="{{ $product->code }}">Add</button></td>
                 </tr>
             @endforeach
         </tbody>

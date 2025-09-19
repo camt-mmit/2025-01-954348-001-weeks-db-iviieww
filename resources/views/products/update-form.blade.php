@@ -3,10 +3,9 @@
 ])
 
 @section('content')
-
     <form action="{{ Route('products.update', [
         'product' => $product->code,
-    ])}}" method="post">
+    ]) }}" method="post">
         @csrf
 
         <label>
@@ -14,12 +13,21 @@
             <input type="text" name="code" required value="{{ $product->code }}">
         </label><br>
 
-            <b>Name</b>
-            <input type="name" name="name" required value="{{ $product->name }}">
+        <b>Name</b>
+        <input type="name" name="name" required value="{{ $product->name }}">
         </label><br>
-        
-            <b>Price</b>
-            <input type="number" name="price" step="any" required value="{{ $product->price }}">
+
+        <b>Category</b>
+        <select name="category_id" id="category">
+            @foreach ($category as $categories)
+                <option value="{{ $categories->id }}"
+                    @selected($product->category->code === $categories->code)
+                    >[{{ $categories->code }}] {{ $categories->name }}</option>
+            @endforeach
+        </select><br>
+
+        <b>Price</b>
+        <input type="number" name="price" step="any" required value="{{ $product->price }}">
         </label><br>
 
         <label>
@@ -29,5 +37,4 @@
 
         <button type="submit">Update</button>
     </form>
-
 @endsection
