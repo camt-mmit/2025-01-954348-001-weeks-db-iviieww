@@ -24,6 +24,9 @@
         </label><br>
 
         <button type="submit">Update</button>
+        <a href="{{ route('categories.view',['catCode'=>$category->code]) }}">
+            <button type="button">Cancel</button>
+        </a>
     </form>
 
 @endsection

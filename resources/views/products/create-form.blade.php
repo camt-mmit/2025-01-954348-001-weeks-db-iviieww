@@ -3,7 +3,6 @@
 ])
 
 @section('content')
-
     <form action="{{ Route('products.create') }}" method="post">
         @csrf
 
@@ -11,18 +10,18 @@
             <b>Code</b>
             <input type="text" name="code" required>
         </label><br>
-            <b>Name</b>
-            <input type="name" name="name" required>
+        <b>Name</b>
+        <input type="name" name="name" required>
         </label><br>
         <b>Category</b>
         <select name="category" id="category">
-            <option value="">--->please Select<---</option>
-            @foreach ($categories as $category)
-                <option value="{{ $category->code }}">[{{ $category->code }}] {{ $category->name }}</option>
+            <option value="">--->please Select<---< /option>
+                    @foreach ($categories as $category)
+            <option value="{{ $category->code }}">[{{ $category->code }}] {{ $category->name }}</option>
             @endforeach
         </select><br>
-            <b>Price</b>
-            <input type="number" name="price" step="any" required>
+        <b>Price</b>
+        <input type="number" name="price" step="any" required>
         </label><br>
 
         <label>
@@ -31,6 +30,8 @@
         </label><br>
 
         <button type="submit">Create</button>
+        <a href="{{ session()->get('bookmarks.products.create-form', route('products.list')) }}">
+            <button type="button">Cancel</button>
+        </a>
     </form>
-
 @endsection

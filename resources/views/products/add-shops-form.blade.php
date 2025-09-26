@@ -25,7 +25,7 @@
             id="add-form-add-shop" method="post">@csrf</form>
 
         <ul class="app-cmp-links">
-            <li><a href="{{ route('products.view-shops', ['product' => $product->code]) }}">Back</a></li>
+            <li><a href="{{ session()->get('bookmark.products.add-shops-form',route('products.view-shops', ['product' => $product->code])) }}">Back</a></li>
         </ul>
         <div>
             {{ $shops->withQueryString()->links() }}
@@ -45,6 +45,10 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.shops.view', url()->full());
+                session()->put('bookmarks.shops.list', url()->full());
+            @endphp
             @foreach ($shops as $shops)
                 <tr>
                     <td>

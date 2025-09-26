@@ -18,6 +18,9 @@
     </search>
 
     <nav class="app-cmp-links-bar">
+        @php
+            session()->put('bookmarks.shops.create-form', url()->full());
+        @endphp
         <ul class="app-cmp-links">
             <li><a href="{{ route('shops.create-form') }}">New Shops</a></li>
         </ul>
@@ -28,7 +31,6 @@
 @endsection
 
 @section('content')
-
     <table class="app-cmp-data-list">
         <thead>
             <tr>
@@ -39,10 +41,13 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.shops.view', url()->full());
+            @endphp
             @foreach ($shops as $shops)
                 <tr>
                     <td>
-                        <a href="{{ Route('shops.view', ['shops' => $shops->code])}}">
+                        <a href="{{ Route('shops.view', ['shops' => $shops->code]) }}">
                             {{ $shops->code }}
                         </a>
                     </td>
@@ -50,8 +55,7 @@
                     <td>{{ $shops->owner }}</td>
                     <td>{{ $shops->products_count }}</td>
                 </tr>
-                @endforeach
+            @endforeach
         </tbody>
     </table>
-
 @endsection

@@ -12,11 +12,17 @@
 
     <nav>
         <ul class="app-cmp-links">
+            <li>
+                <a href="{{ session()->get('bookmarks.categories.view', route('categories.list')) }}">&lt; Back</a>
+            </li>
              <li>
                 <a href="{{ route('categories.view-products', [
                     'catCode' => $category->code,
                 ]) }}">View Shops</a>
             </li>
+            @php
+                session()->put('bookmarks.categories.view-products', url()->full());
+            @endphp
             <li>
                 <a
                     href="{{ route('categories.update-form', [

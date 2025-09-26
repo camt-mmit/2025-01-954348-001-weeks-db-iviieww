@@ -21,7 +21,7 @@
             </label><br />
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('categories.list') }}">
+            <a href="{{ route('categories.view-products',['catCode' => $categories->code]) }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
@@ -30,7 +30,7 @@
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
             <li><a href="{{ route('categories.add-products-form', ['catCode' => $categories->code]) }}">Add Product</a></li>
-            <li><a href="{{ route('categories.view-products', ['catCode' => $categories->code]) }}">Back</a></li>
+            <li><a href="{{ session()->get('bookmarks.categories.view-products', route('categories.view', ['catCode' => $categories->code])) }}">Back</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
@@ -51,6 +51,10 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.categories.add-products-form', url()->full());
+                session()->put('bookmarks.products.view', url()->full());
+            @endphp
             @foreach ($products as $product)
                 <tr>
                     <td>

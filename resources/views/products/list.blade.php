@@ -26,6 +26,9 @@
     </search>
 
     <nav class="app-cmp-links-bar">
+        @php
+            session()->put('bookmarks.products.create-form', url()->full());
+        @endphp
         <ul class="app-cmp-links">
             <li><a href="{{ route('products.create-form') }}">New Products</a></li>
         </ul>
@@ -47,6 +50,10 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.products.view', url()->full());
+                session()->put('bookmarks.categories.view', url()->full());
+            @endphp
             @foreach ($products as $product)
                 <tr>
                     <td>
@@ -55,7 +62,9 @@
                         </a>
                     </td>
                     <td>{{ $product->name }}</td>
-                    <td>{{ $product->category->name }}</td>
+                    <td>
+                        <a href="{{ Route('categories.view',['catCode' => $product->category->code])}}">{{ $product->category->name }}</a>
+                    </td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->shops_count }}</td>
                 </tr>

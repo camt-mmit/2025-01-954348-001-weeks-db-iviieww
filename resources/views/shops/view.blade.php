@@ -12,9 +12,14 @@
         </form>
         <ul class="app-cmp-links">
             <li>
-                <a href="{{ route('shops.view-products', [
-                    'shops' => $shops->code,
-                ]) }}">View Products</a>
+                <a href="{{ session()->get('bookmarks.shops.view', route('shops.list')) }}">&lt; Back</a>
+            </li>
+            <li>
+                <a
+                    href="{{ route('shops.view-products', [
+                        'shops' => $shops->code,
+                    ]) }}">View
+                    Products</a>
             </li>
             <li>
                 <a
@@ -30,6 +35,9 @@
 @endsection
 
 @section('content')
+    @php
+        session()->put('bookmarks.shops.view-products', url()->full());
+    @endphp
     <dl>
         <dt>Code</dt>
         <dd>
@@ -50,7 +58,7 @@
 
         <dt>Address</dt>
         <dd>
-            <pre>{!!nl2br($shops->address)!!}</pre>
+            <pre>{!! nl2br($shops->address) !!}</pre>
         </dd>
     </dl>
 @endsection

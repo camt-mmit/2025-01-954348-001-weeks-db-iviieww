@@ -21,7 +21,7 @@
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
             <li><a href="{{ route('products.add-shops-form', ['product' => $product->code]) }}">Add Shops</a></li>
-            <li><a href="{{ route('products.view', ['product' => $productCode]) }}">Back</a></li>
+            <li><a href="{{ session()->get('bookmarks.products.view-shops', route('products.view', ['product' => $productCode])) }}">Back</a></li>
         </ul>
         <div>
             {{ $shops->withQueryString()->links() }}
@@ -46,6 +46,9 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.products.add-shops-form', url()->full());
+            @endphp
             @foreach ($shops as $shops)
                 <tr>
                     <td>

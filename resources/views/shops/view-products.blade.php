@@ -5,7 +5,7 @@
 
 @section('header')
     <search>
-        <form action="{{ route('shops.view-products', ['shops' => $shop]) }}" method="get" class="app-cmp-search-form">
+        <form action="{{ route('shops.view-products', ['shops' => $shop->code]) }}" method="get" class="app-cmp-search-form">
             <label>
                 <b>Search</b>
                 <input type="text" name="term" value="{{ $criteria['term'] }}" />
@@ -20,7 +20,7 @@
             </label><br />
             <br />
             <button type="submit" class="primary">Search</button>
-            <a href="{{ route('products.list') }}">
+            <a href="{{ route('shops.view-products',['shops' => $shop->code]) }}">
                 <button type="button" class="accent">X</button>
             </a>
         </form>
@@ -29,7 +29,7 @@
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
             <li><a href="{{ route('shops.add-products-form', ['shops' => $shop->code]) }}">Add products</a></li>
-            <li><a href="{{ route('shops.view', ['shops' => $shop]) }}">Back</a></li>
+            <li><a href="{{ session()->get('bookmarks.shops.view-products',route('shops.view', ['shops' => $shop])) }}">Back</a></li>
         </ul>
 
 
@@ -58,6 +58,11 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.shops.add-products-form', url()->full());
+                session()->put('bookmarks.categories.view', url()->full());
+                session()->put('bookmarks.products.view', url()->full());
+            @endphp
             @foreach ($products as $product)
                 <tr>
                     <td>
@@ -66,7 +71,9 @@
                         </a>
                     </td>
                     <td>{{ $product->name }}</td>
-                    <td>{{ $product->category->name }}</td>
+                    <td>
+                        <a href="{{ Route('categories.view',['catCode' => $product->category->code])}}">{{ $product->category->name }}</a>
+                    </td>
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->shops_count }}</td>
                     <td><button type="submit" form="app-form-remove-shop" name="product"

@@ -1,4 +1,4 @@
-@extends('products.main', [
+@extends('shops.main', [
     'title' => 'Create',
 ])
 
@@ -33,6 +33,9 @@
         </label><br>
 
         <button type="submit">Create</button>
+        <a href="{{ session()->get('bookmarks.shops.create-form', route('shops.list')) }}">
+            <button type="button">Cancel</button>
+        </a>
     </form>
 
 @endsection

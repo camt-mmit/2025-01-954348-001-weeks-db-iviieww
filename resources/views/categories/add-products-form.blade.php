@@ -34,7 +34,7 @@
             id="add-form-add-product" method="post">@csrf</form>
 
         <ul class="app-cmp-links">
-            <li><a href="{{ route('categories.view-products', ['catCode' => $category->code]) }}">Back</a></li>
+            <li><a href="{{ session('bookmarks.categories.add-products-form',route('categories.view-products', ['catCode' => $category->code])) }}">Back</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
@@ -56,6 +56,9 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.products.view', url()->full());
+            @endphp
             @foreach ($products as $product)
                 <tr>
                     <td>

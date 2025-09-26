@@ -38,6 +38,12 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                session()->put('bookmarks.categories.create-form', url()->full());
+            @endphp
+            @php
+                session()->put('bookmarks.categories.view', url()->full());
+            @endphp
             @foreach ($categories as $category)
                 <tr>
                     <td>

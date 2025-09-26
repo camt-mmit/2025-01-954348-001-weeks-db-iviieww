@@ -35,5 +35,8 @@
         </label><br>
 
         <button type="submit">Update</button>
+        <a href="{{ route('shops.view',['shops'=>$shops->code]) }}">
+            <button type="button">Cancel</button>
+        </a>
     </form>
 @endsection

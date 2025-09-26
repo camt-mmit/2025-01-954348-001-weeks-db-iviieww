@@ -48,7 +48,8 @@ class CategoryController extends SearchableController
     function create(ServerRequestInterface $request): RedirectResponse
     {
         $category = category::create($request->getParsedBody());
-        return redirect()->route('categories.list');
+        return redirect()->route('categories.list')
+        ->with('status', "Category {$category->code} was created.");
     }
 
     function updateForm(string $catCode): View
@@ -68,7 +69,8 @@ class CategoryController extends SearchableController
 
         return redirect()->route('categories.view', [
             'catCode' => $category->code,
-        ]);
+        ])
+        ->with('status', "Category {$category->code} was updated.");
     }
 
     function delete(string $category): RedirectResponse
@@ -76,7 +78,8 @@ class CategoryController extends SearchableController
         $category = $this->find($category);
         $category->delete();
 
-        return redirect()->route('categories.list');
+        return redirect()->route('categories.list')
+        ->with('status', "Category {$category->code} was deleted.");
     }
 
     function viewProducts(
@@ -143,6 +146,7 @@ class CategoryController extends SearchableController
             ->firstOrFail();
         // Add $shop to $product
         $category->products()->save($product);
-        return redirect()->back();
+        return redirect()->back()
+        ->with('status', "Product {$product->code} was add to Category {$category->code}.");
     }
 }

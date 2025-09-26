@@ -11,6 +11,9 @@
         </form>
         <ul class="app-cmp-links">
             <li>
+                <a href="{{session()->get('bookmarks.products.view',route('products.list'))}}">&lt; Back</a>
+            </li>
+            <li>
                 <a href="{{ route('products.view-shops', [
                     'product' => $product->code,
                 ]) }}">View Shops</a>
@@ -25,6 +28,9 @@
             </li>
         </ul>
     </nav>
+    @php
+        session()->put('bookmarks.products.view-shops', url()->full());
+    @endphp
 @endsection
 
 @section('content')
