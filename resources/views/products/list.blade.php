@@ -29,12 +29,15 @@
         @php
             session()->put('bookmarks.products.create-form', url()->full());
         @endphp
+
+        @can('create', \App\Models\Product::class)
         <ul class="app-cmp-links">
             <li><a href="{{ route('products.create-form') }}">New Products</a></li>
         </ul>
         <div>
             {{ $products->withQueryString()->links() }}
         </div>
+        @endcan
     </nav>
 @endsection
 

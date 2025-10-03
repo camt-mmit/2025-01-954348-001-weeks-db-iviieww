@@ -20,7 +20,9 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
+            @can('update',$product)
             <li><a href="{{ route('products.add-shops-form', ['product' => $product->code]) }}">Add Shops</a></li>
+            @endcan
             <li><a href="{{ session()->get('bookmarks.products.view-shops', route('products.view', ['product' => $productCode])) }}">Back</a></li>
         </ul>
         <div>
@@ -42,7 +44,9 @@
                 <th>Name</th>
                 <th>Owner</th>
                 <th>No. of Products</th>
+                @can('update',$product)
                 <th></th>
+                @endcan
             </tr>
         </thead>
         <tbody>
@@ -59,9 +63,11 @@
                     <td>{{ $shops->name }}</td>
                     <td>{{ $shops->owner }}</td>
                     <td>{{ $shops->products_count }}</td>
+                    @can('update',$product)
                     <td><button type="submit" form="app-form-remove-shop" name="shop"
                             value="{{ $shops->code }}">Remove</button>
                     </td>
+                    @endcan
                 </tr>
             @endforeach
         </tbody>

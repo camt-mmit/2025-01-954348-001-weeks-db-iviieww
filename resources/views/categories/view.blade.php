@@ -23,6 +23,7 @@
             @php
                 session()->put('bookmarks.categories.view-products', url()->full());
             @endphp
+            @can('delete', $category)
             <li>
                 <a
                     href="{{ route('categories.update-form', [
@@ -32,6 +33,7 @@
             <li>
                 <button type="submit" form="app-form-delete" class="app-cl-link">Delete</button>
             </li>
+            @endcan
         </ul>
     </nav>
 @endsection

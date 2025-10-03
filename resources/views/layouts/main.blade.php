@@ -16,8 +16,23 @@
                 <li><a href="{{ route('products.list') }}">Product</a></li>
                 <li><a href="{{ route('shops.list') }}">shops</a></li>
                 <li><a href="{{ route('categories.list') }}">Categories</a></li>
+                <li><a href="{{ route('users.list') }}">Users</a></li>
             </ul>
         </nav>
+
+        @php
+            session()->put('bookmarks.users.view', url()->full());
+        @endphp
+
+        @auth
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <a href="{{ Route('users.selves-view') }}">
+                    <span>{{ \Auth::user()->name }}</span>
+                </a>
+                <button type="submit">Logout</button>
+            </form>
+        @endauth
     </header>
 
     <main id="app-cmp-main-content">

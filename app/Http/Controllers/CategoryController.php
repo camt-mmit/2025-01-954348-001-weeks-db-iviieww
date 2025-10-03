@@ -6,6 +6,7 @@ use App\Models\category;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,7 @@ class CategoryController extends SearchableController
 
     function list(ServerRequestInterface $request): View
     {
+        Gate::authorize('list',category::class);
         $criteria = $this->prepareCriteria($request->getQueryParams());
         $query = $this->search($criteria)->withCount('products');
 
@@ -34,6 +36,7 @@ class CategoryController extends SearchableController
 
     function view(string $catCode): View
     {
+        Gate::authorize('view',category::class);
         $category = category::where('code', $catCode)->firstOrFail();
         return view('categories.view', [
             'category' => $category,
@@ -42,19 +45,22 @@ class CategoryController extends SearchableController
 
     function showCreateForm(): View
     {
+        Gate::authorize('create',category::class);
         return view('categories.create-form');
     }
 
     function create(ServerRequestInterface $request): RedirectResponse
     {
+        Gate::authorize('create',category::class);
         $category = category::create($request->getParsedBody());
         return redirect()->route('categories.list')
-        ->with('status', "Category {$category->code} was created.");
+            ->with('status', "Category {$category->code} was created.");
     }
 
     function updateForm(string $catCode): View
     {
         $category = $this->find($catCode);
+        Gate::authorize('update',category::class);
 
         return view('categories.update-form', [
             'category' => $category,
@@ -63,6 +69,7 @@ class CategoryController extends SearchableController
 
     function update(ServerRequestInterface $request, string $catCode): RedirectResponse
     {
+        Gate::authorize('update',category::class);
         $category = $this->find($catCode);
         $category->fill($request->getParsedBody());
         $category->save();
@@ -70,16 +77,17 @@ class CategoryController extends SearchableController
         return redirect()->route('categories.view', [
             'catCode' => $category->code,
         ])
-        ->with('status', "Category {$category->code} was updated.");
+            ->with('status', "Category {$category->code} was updated.");
     }
 
     function delete(string $category): RedirectResponse
     {
         $category = $this->find($category);
+        Gate::authorize('delete', $category);
         $category->delete();
 
         return redirect()->route('categories.list')
-        ->with('status', "Category {$category->code} was deleted.");
+            ->with('status', "Category {$category->code} was deleted.");
     }
 
     function viewProducts(
@@ -114,7 +122,7 @@ class CategoryController extends SearchableController
             ->whereDoesntHave(
                 'category',
                 function (Builder $innerQuery) use ($category) {
-                    return $innerQuery->where('code',$category->code);
+                    return $innerQuery->where('code', $category->code);
                 },
             );
         $query = $ProductController->filter($query, $criteria)->withCount('shops');
@@ -147,6 +155,6 @@ class CategoryController extends SearchableController
         // Add $shop to $product
         $category->products()->save($product);
         return redirect()->back()
-        ->with('status', "Product {$product->code} was add to Category {$category->code}.");
+            ->with('status', "Product {$product->code} was add to Category {$category->code}.");
     }
 }

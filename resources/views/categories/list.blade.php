@@ -18,9 +18,11 @@
     </search>
 
     <nav class="app-cmp-links-bar">
+        @can('update',$categories)
         <ul class="app-cmp-links">
             <li><a href="{{ route('categories.create-form') }}">New Categories</a></li>
         </ul>
+        @endcan
         <div>
             {{ $categories->withQueryString()->links() }}
         </div>

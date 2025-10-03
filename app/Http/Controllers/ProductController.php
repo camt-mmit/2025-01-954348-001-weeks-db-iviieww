@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Psr\Http\Message\ServerRequestInterface;
@@ -77,6 +78,7 @@ class ProductController extends SearchableController
 
     function list(ServerRequestInterface $request): View
     {
+        Gate::authorize('list',Product::class);
         $criteria = $this->prepareCriteria($request->getQueryParams());
         $query = $this->search($criteria)->with('category')->withCount('shops');
 
@@ -89,6 +91,7 @@ class ProductController extends SearchableController
     function view(string $productCode): View
     {
         $product = Product::where('code', $productCode)->with('category')->firstOrFail();
+        Gate::authorize('view',$product);
         return view('products.view', [
             'product' => $product,
         ]);
@@ -97,6 +100,8 @@ class ProductController extends SearchableController
     function showCreateForm(
         CategoryController $categoryController,
     ): View {
+        Gate::authorize('create',Product::class);
+        
         $categories = $categoryController->getQuery()->get();
 
         return view('products.create-form', [
@@ -108,6 +113,8 @@ class ProductController extends SearchableController
         ServerRequestInterface $request,
         CategoryController $categoryController,
     ): RedirectResponse {
+        Gate::authorize('create',Product::class);
+
         $data = $request->getParsedBody();
         $category = $categoryController->find($data['category']);
 
@@ -125,6 +132,7 @@ class ProductController extends SearchableController
         string $productCode,
     ): View {
         $product = $this->find($productCode);
+        Gate::authorize('update',$productCode);
         $categories = $categoryController->getQuery()->get();
 
         return view('products.update-form', [
@@ -138,8 +146,9 @@ class ProductController extends SearchableController
         CategoryController $categoryController,
         string $productCode,
     ): RedirectResponse {
-        $data = $request->getParsedBody();
         $product = $this->find($productCode);
+        Gate::authorize('update',$product);
+        $data = $request->getParsedBody();
         $category = $categoryController->find($data['category']);
 
         $product->fill($data);
@@ -155,6 +164,7 @@ class ProductController extends SearchableController
     function delete(string $productCode): RedirectResponse
     {
         $product = $this->find($productCode);
+        Gate::authorize('delete',$product);
         $product->delete();
 
         return redirect(
@@ -168,6 +178,7 @@ class ProductController extends SearchableController
         string $productCode
     ): View {
         $product = $this->find($productCode);
+        Gate::authorize('view',$product);
         $criteria = $shopController->prepareCriteria($request->getQueryParams());
         $query = $shopController
 
@@ -187,6 +198,7 @@ class ProductController extends SearchableController
         string $productCode
     ): View {
         $product = $this->find($productCode);
+        Gate::authorize('update',$product);
         $criteria = $shopController->prepareCriteria($request->getQueryParams());
         $query = $shopController
             ->getQuery()
@@ -211,6 +223,7 @@ class ProductController extends SearchableController
     ): RedirectResponse {
         // Method body
         $product = $this->find($productCode);
+        Gate::authorize('update',$product);
         $data = $request->getParsedBody();
         // To make sure that no duplicate shop.
         $shop = $shopController
@@ -235,6 +248,7 @@ class ProductController extends SearchableController
         string $productCode,
     ): RedirectResponse {
         $product = $this->find($productCode);
+        Gate::authorize('update',$product);
         $data = $request->getParsedBody();
         // To get existing shop
         $shop = $product->shops()

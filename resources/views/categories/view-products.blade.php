@@ -29,7 +29,9 @@
 
     <nav class="app-cmp-links-bar">
         <ul class="app-cmp-links">
+            @can('delete', $categories)
             <li><a href="{{ route('categories.add-products-form', ['catCode' => $categories->code]) }}">Add Product</a></li>
+            @endcan
             <li><a href="{{ session()->get('bookmarks.categories.view-products', route('categories.view', ['catCode' => $categories->code])) }}">Back</a></li>
         </ul>
         <div>
