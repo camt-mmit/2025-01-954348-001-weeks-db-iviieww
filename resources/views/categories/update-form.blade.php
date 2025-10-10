@@ -11,16 +11,16 @@
 
         <label>
             <b>Code</b>
-            <input type="text" name="code" required value="{{ $category->code }}">
+            <input type="text" name="code" required value="{{ old('code', $category->code) }}">
         </label><br>
 
             <b>Name</b>
-            <input type="name" name="name" required value="{{ $category->name }}">
+            <input type="name" name="name" required value="{{ old('name', $category->name) }}">
         </label><br>
 
         <label>
             <b>Description</b>
-            <textarea name="description" required cols="80" rows="10">{{ $category->description }}</textarea>
+            <textarea name="description" required cols="80" rows="10">{{ old('description', $category->description) }}</textarea>
         </label><br>
 
         <button type="submit">Update</button>

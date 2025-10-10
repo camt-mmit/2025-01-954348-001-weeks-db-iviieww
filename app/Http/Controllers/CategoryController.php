@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\category;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -24,7 +25,7 @@ class CategoryController extends SearchableController
 
     function list(ServerRequestInterface $request): View
     {
-        Gate::authorize('list',category::class);
+        Gate::authorize('list', category::class);
         $criteria = $this->prepareCriteria($request->getQueryParams());
         $query = $this->search($criteria)->withCount('products');
 
@@ -36,7 +37,7 @@ class CategoryController extends SearchableController
 
     function view(string $catCode): View
     {
-        Gate::authorize('view',category::class);
+        Gate::authorize('view', category::class);
         $category = category::where('code', $catCode)->firstOrFail();
         return view('categories.view', [
             'category' => $category,
@@ -45,22 +46,28 @@ class CategoryController extends SearchableController
 
     function showCreateForm(): View
     {
-        Gate::authorize('create',category::class);
+        Gate::authorize('create', category::class);
         return view('categories.create-form');
     }
 
     function create(ServerRequestInterface $request): RedirectResponse
     {
-        Gate::authorize('create',category::class);
-        $category = category::create($request->getParsedBody());
-        return redirect()->route('categories.list')
-            ->with('status', "Category {$category->code} was created.");
+        Gate::authorize('create', category::class);
+        try {
+            $category = category::create($request->getParsedBody());
+            return redirect()->route('categories.list')
+                ->with('status', "Category {$category->code} was created.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function updateForm(string $catCode): View
     {
         $category = $this->find($catCode);
-        Gate::authorize('update',category::class);
+        Gate::authorize('update', category::class);
 
         return view('categories.update-form', [
             'category' => $category,
@@ -69,25 +76,37 @@ class CategoryController extends SearchableController
 
     function update(ServerRequestInterface $request, string $catCode): RedirectResponse
     {
-        Gate::authorize('update',category::class);
-        $category = $this->find($catCode);
-        $category->fill($request->getParsedBody());
-        $category->save();
+        Gate::authorize('update', category::class);
+        try {
+            $category = $this->find($catCode);
+            $category->fill($request->getParsedBody());
+            $category->save();
 
-        return redirect()->route('categories.view', [
-            'catCode' => $category->code,
-        ])
-            ->with('status', "Category {$category->code} was updated.");
+            return redirect()->route('categories.view', [
+                'catCode' => $category->code,
+            ])
+                ->with('status', "Category {$category->code} was updated.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function delete(string $category): RedirectResponse
     {
         $category = $this->find($category);
         Gate::authorize('delete', $category);
-        $category->delete();
+        try {
+            $category->delete();
 
-        return redirect()->route('categories.list')
-            ->with('status', "Category {$category->code} was deleted.");
+            return redirect()->route('categories.list')
+                ->with('status', "Category {$category->code} was deleted.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function viewProducts(
@@ -138,23 +157,29 @@ class CategoryController extends SearchableController
         ProductController $ProductController,
         string $categoryCode,
     ): RedirectResponse {
-        // Method body
-        $category = $this->find($categoryCode);
-        $data = $request->getParsedBody();
-        // To make sure that no duplicate shop.
-        $product = $ProductController
-            ->getQuery()
-            ->whereDoesntHave(
-                'category',
-                function (Builder $innerQuery) use ($category) {
-                    return $innerQuery->where('code', $category->code);
-                },
-            )
-            ->where('code', $data['products'])
-            ->firstOrFail();
-        // Add $shop to $product
-        $category->products()->save($product);
-        return redirect()->back()
-            ->with('status', "Product {$product->code} was add to Category {$category->code}.");
+        try {
+            // Method body
+            $category = $this->find($categoryCode);
+            $data = $request->getParsedBody();
+            // To make sure that no duplicate shop.
+            $product = $ProductController
+                ->getQuery()
+                ->whereDoesntHave(
+                    'category',
+                    function (Builder $innerQuery) use ($category) {
+                        return $innerQuery->where('code', $category->code);
+                    },
+                )
+                ->where('code', $data['products'])
+                ->firstOrFail();
+            // Add $shop to $product
+            $category->products()->save($product);
+            return redirect()->back()
+                ->with('status', "Product {$product->code} was add to Category {$category->code}.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 }

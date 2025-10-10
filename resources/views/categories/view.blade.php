@@ -23,7 +23,7 @@
             @php
                 session()->put('bookmarks.categories.view-products', url()->full());
             @endphp
-            @can('delete', $category)
+            @can('update', $category)
             <li>
                 <a
                     href="{{ route('categories.update-form', [

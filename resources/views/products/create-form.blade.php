@@ -8,25 +8,27 @@
 
         <label>
             <b>Code</b>
-            <input type="text" name="code" required>
+            <input type="text" name="code" required value="{{ old('code') }}">
         </label><br>
         <b>Name</b>
-        <input type="name" name="name" required>
+        <input type="name" name="name" required value="{{ old('name') }}">
         </label><br>
         <b>Category</b>
         <select name="category" id="category">
             <option value="">--->please Select<---< /option>
                     @foreach ($categories as $category)
-            <option value="{{ $category->code }}">[{{ $category->code }}] {{ $category->name }}</option>
+            <option value="{{ $category->code }}"
+                @selected($category->code === old('category'))>
+                [{{ $category->code }}] {{ $category->name }}</option>
             @endforeach
         </select><br>
         <b>Price</b>
-        <input type="number" name="price" step="any" required>
+        <input type="number" name="price" step="any" required value="{{ old('price') }}">
         </label><br>
 
         <label>
             <b>Description</b>
-            <textarea name="description" required cols="80" rows="10"></textarea>
+            <textarea name="description" required cols="80" rows="10">{{ old('description') }}</textarea>
         </label><br>
 
         <button type="submit">Create</button>

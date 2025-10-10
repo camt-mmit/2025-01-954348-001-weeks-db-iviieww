@@ -16,7 +16,9 @@
                 <li><a href="{{ route('products.list') }}">Product</a></li>
                 <li><a href="{{ route('shops.list') }}">shops</a></li>
                 <li><a href="{{ route('categories.list') }}">Categories</a></li>
-                <li><a href="{{ route('users.list') }}">Users</a></li>
+                @can('create', \App\Models\User::class)
+                    <li><a href="{{ route('users.list') }}">Users</a></li>
+                @endcan
             </ul>
         </nav>
 
@@ -27,7 +29,7 @@
         @auth
             <form action="{{ route('logout') }}" method="post">
                 @csrf
-                <a href="{{ Route('users.selves-view') }}">
+                <a href="{{ Route('users.selves.selves-view') }}">
                     <span>{{ \Auth::user()->name }}</span>
                 </a>
                 <button type="submit">Logout</button>
@@ -40,6 +42,15 @@
             <h1>{{ $title }}</h1>
             @yield('header')
         </header>
+        <div class="app-cmp-notifications">
+            {{-- status message --}}
+
+            @error('alert')
+                <div role="alert">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
         <div class="app-cmp-notifications">
             @session('status')

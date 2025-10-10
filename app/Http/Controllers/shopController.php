@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\shop;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -68,7 +69,7 @@ class shopController extends SearchableController
     function view(string $productCode): View
     {
         $shop = shop::where('code', $productCode)->firstOrFail();
-        Gate::authorize('view',$shop);
+        Gate::authorize('view', $shop);
         return view('shops.view', [
             'shops' => $shop,
         ]);
@@ -76,25 +77,31 @@ class shopController extends SearchableController
 
     function showCreateForm(): View
     {
-        Gate::authorize('craete',Shop::class);
+        Gate::authorize('update', Shop::class);
 
         return view('shops.create-form');
     }
 
     function create(ServerRequestInterface $request): RedirectResponse
     {
-        $shop = shop::create($request->getParsedBody());
-        Gate::authorize('create',$shop);
-        return redirect(
-            session()->get('bookmarks.shops.create-form', route('shops.list'))
-        )
-            ->with('status', "Shop {$shop->code} was created.");
+        Gate::authorize('create', shop::class);
+        try {
+            $shop = shop::create($request->getParsedBody());
+            return redirect(
+                session()->get('bookmarks.shops.create-form', route('shops.list'))
+            )
+                ->with('status', "Shop {$shop->code} was created.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function updateForm(string $productCode): View
     {
         $shop = $this->find($productCode);
-        Gate::authorize('update',$shop);
+        Gate::authorize('update', $shop);
 
         return view('shops.update-form', [
             'shops' => $shop,
@@ -103,27 +110,39 @@ class shopController extends SearchableController
 
     function update(ServerRequestInterface $request, string $productCode): RedirectResponse
     {
-        $shops = $this->find($productCode);
-        Gate::authorize('update',Shop::class);
-        $shops->fill($request->getParsedBody());
-        $shops->save();
+        try {
+            $shops = $this->find($productCode);
+            Gate::authorize('update', Shop::class);
+            $shops->fill($request->getParsedBody());
+            $shops->save();
 
-        return redirect()->route('shops.view', [
-            'shops' => $shops->code,
-        ])
-        ->with('status', "Shop {$shops->code} was updated.");
+            return redirect()->route('shops.view', [
+                'shops' => $shops->code,
+            ])
+                ->with('status', "Shop {$shops->code} was updated.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function delete(string $productCode): RedirectResponse
     {
-        $product = $this->find($productCode);
-        Gate::authorize('delete',Shop::class);
-        $product->delete();
+        try {
+            $product = $this->find($productCode);
+            Gate::authorize('delete', Shop::class);
+            $product->delete();
 
-        return redirect(
-            session()->get('bookmarks.shops.list', route('shops.list'))
-        )
-            ->with('status', "Shop {$product->code} was deleted.");
+            return redirect(
+                session()->get('bookmarks.shops.list', route('shops.list'))
+            )
+                ->with('status', "Shop {$product->code} was deleted.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function viewProducts(
@@ -132,7 +151,7 @@ class shopController extends SearchableController
         string $shop
     ): View {
         $shop = $this->find($shop);
-        Gate::authorize('view',Shop::class);
+        Gate::authorize('view', Shop::class);
         $criteria = $productController->prepareCriteria($request->getQueryParams());
         $query = $productController
 
@@ -152,7 +171,7 @@ class shopController extends SearchableController
         string $shopCode
     ): View {
         $shop = $this->find($shopCode);
-        Gate::authorize('update',Shop::class);
+        Gate::authorize('update', Shop::class);
         $criteria = $ProductController->prepareCriteria($request->getQueryParams());
         $query = $ProductController
             ->getQuery()
@@ -175,41 +194,53 @@ class shopController extends SearchableController
         ProductController $ProductController,
         string $shopCode,
     ): RedirectResponse {
-        // Method body
-        $shop = $this->find($shopCode);
-        Gate::authorize('update',Shop::class);
-        $data = $request->getParsedBody();
-        // To make sure that no duplicate shop.
-        $product = $ProductController
-            ->getQuery()
-            ->whereDoesntHave(
-                'shops',
-                function (Builder $innerQuery) use ($shop) {
-                    return $innerQuery->where('code', $shop->code);
-                },
-            )
-            ->where('code', $data['products'])
-            ->firstOrFail();
-        // Add $shop to $product
-        $shop->products()->save($product);
-        return redirect()->back()
-        ->with('status', "Product {$product->code} was add to Shop {$shop->code}.");
+        try {
+            // Method body
+            $shop = $this->find($shopCode);
+            Gate::authorize('update', Shop::class);
+            $data = $request->getParsedBody();
+            // To make sure that no duplicate shop.
+            $product = $ProductController
+                ->getQuery()
+                ->whereDoesntHave(
+                    'shops',
+                    function (Builder $innerQuery) use ($shop) {
+                        return $innerQuery->where('code', $shop->code);
+                    },
+                )
+                ->where('code', $data['products'])
+                ->firstOrFail();
+            // Add $shop to $product
+            $shop->products()->save($product);
+            return redirect()->back()
+                ->with('status', "Product {$product->code} was add to Shop {$shop->code}.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function removeProduct(
         ServerRequestInterface $request,
         string $shopCode,
     ): RedirectResponse {
-        $shop = $this->find($shopCode);
-        Gate::authorize('update',Shop::class);
-        $data = $request->getParsedBody();
-        // To get existing shop
-        $product = $shop->products()
-            ->where('code', $data['product'])
-            ->firstOrFail();
-        // Remove $shop from $product
-        $shop->products()->detach($product);
-        return redirect()->back()
-        ->with('status', "Product {$product->code} was remove from Shop {$shop->code}.");
+        try {
+            $shop = $this->find($shopCode);
+            Gate::authorize('update', Shop::class);
+            $data = $request->getParsedBody();
+            // To get existing shop
+            $product = $shop->products()
+                ->where('code', $data['product'])
+                ->firstOrFail();
+            // Remove $shop from $product
+            $shop->products()->detach($product);
+            return redirect()->back()
+                ->with('status', "Product {$product->code} was remove from Shop {$shop->code}.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 }

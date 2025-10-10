@@ -16,15 +16,15 @@
 
         <label>
             <b>Email</b>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required value="{{ old('email') }}">
         </label><br>
         <label>
             <b>Name</b>
-            <input type="text" name="name" required>
+            <input type="text" name="name" required value="{{ old('name') }}">
         </label><br>
         <label>
             <b>Password</b>
-            <input type="password" name="password" required>
+            <input type="password" name="password" required value="{{ old('password') }}">
         </label><br>
         <b>Role</b>
         <select name="role">

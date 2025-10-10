@@ -3,7 +3,9 @@
 ])
 
 @section('content')
-    <form action="{{ route('users.selves.update') }}" method="post">
+    <form action="{{ route('users.update', [
+        'userCode' => $users->email,
+    ]) }}" method="post">
         @csrf
 
         <label>
@@ -34,7 +36,9 @@
         </label><br>
 
         <button type="submit">Update</button>
-        <a href="{{ route('users.selves.selves-view') }}">
+        <a href="{{ route('users.view', [
+            'userCode' => $users->email,
+        ])}}">
             <button type="button">Cancel</button>
         </a>
     </form>

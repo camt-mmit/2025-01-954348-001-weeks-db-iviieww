@@ -7,9 +7,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('users.update-form', [
-                    'userCode' => $users->email,
-                ]) }}">Update</a>
+            <a href="{{ route('users.selves.update-form') }}">Update</a>
             </li>
     </ul>
 @endsection

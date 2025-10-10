@@ -89,15 +89,24 @@ Route::middleware([
     Route::controller(UserController::class)
         ->prefix('/users')
         ->name('users.')
-        ->group(static function (): void{
-            Route::get('','list')->name('list');
-            Route::get('/create','showCreateForm')->name('create-form');
-            Route::post('/create','create')->name('create');
-            Route::get('/selves-view','selvesView')->name('selves-view');
-            Route::prefix('/{userCode}')->group(static function (): void{
-                Route::get('/view','view')->name('view');
-                Route::get('/update-form','updateForm')->name('update-form');
-                Route::post('/update','update')->name('update');
+        ->group(static function (): void {
+            Route::get('', 'list')->name('list');
+            Route::get('/create', 'showCreateForm')->name('create-form');
+            Route::post('/create', 'create')->name('create');
+
+            Route::prefix('/selves')
+            ->name('selves.')
+            ->group(static function (): void {
+                Route::get('/selves-view', 'selvesView')->name('selves-view');
+                route::get('/update', 'selvesUpdateForm')->name('update-form');
+                route::post('/update', 'selvesUpdate')->name('update');
+            });
+
+            Route::prefix('/{userCode}')->group(static function (): void {
+                route::get('/view', 'view')->name('view');
+                route::post('/delete', 'delete')->name('delete');
+                route::get('/updateForm', 'updateForm')->name('update-form-user');
+                route::post('/update', 'update')->name('update');
             });
         });
 });

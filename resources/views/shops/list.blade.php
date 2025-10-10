@@ -21,7 +21,7 @@
         @php
             session()->put('bookmarks.shops.create-form', url()->full());
         @endphp
-        @can('update',$shops)
+        @can('update', \App\Models\Shop::class)
         <ul class="app-cmp-links">
             <li><a href="{{ route('shops.create-form') }}">New Shops</a></li>
         </ul>

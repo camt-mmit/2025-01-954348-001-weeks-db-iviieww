@@ -18,7 +18,7 @@
     </search>
 
     <nav class="app-cmp-links-bar">
-        @can('update',$categories)
+        @can('update', \App\Models\Shop::class)
         <ul class="app-cmp-links">
             <li><a href="{{ route('categories.create-form') }}">New Categories</a></li>
         </ul>
