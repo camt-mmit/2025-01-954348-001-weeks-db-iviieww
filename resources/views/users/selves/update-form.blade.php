@@ -8,11 +8,11 @@
 
         <label>
             <b>email</b>
-            <input type="email" name="email" required value="{{ old('email', $users->email) }}">
+            <input type="email" name="email"  value="{{ old('email', $users->email) }}" readonly>
         </label><br>
         <label>
             <b>Name</b>
-            <input type="text" name="name" required value="{{ old('name', $users->name) }}">
+            <input type="text" name="name"  value="{{ old('name', $users->name) }}">
         </label><br>
 
         <label>

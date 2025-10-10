@@ -34,6 +34,7 @@ class UserController extends Controller
 
     function list(User $user): View
     {
+        Gate::authorize('list', User::class);
         $users = $user->getQuery()->get();
         return View('users.list', [
             'users' => $users,
@@ -104,7 +105,9 @@ class UserController extends Controller
             }
             $user->save();
 
-            return redirect()->route('users.view')
+            return redirect()->route('users.view', [
+                'userCode' => $user->email,
+            ])
                 ->with('status', "User {$user->email} was updated.");
         } catch (QueryException $excp) {
             return redirect()->back()->withInput()->withErrors([
@@ -116,21 +119,27 @@ class UserController extends Controller
     function SelvesUpdate(
         ServerRequestInterface $request,
     ): RedirectResponse {
-        $user = User::where('email', auth::user()->email)->firstOrFail();
-        $data = $request->getParsedBody();
-        $password = $user->password;
-        $user->fill($data);
-        $user->email = $data['email'];
-        $user->role = $data['role'];
-        if ($data['password'] !== null) {
-            $user->password = $data['password'];
-        } else {
-            $user->password = $password;
-        }
-        $user->save();
+        try {
+            $user = User::where('email', auth::user()->email)->firstOrFail();
+            $data = $request->getParsedBody();
+            $password = $user->password;
+            $user->fill($data);
+            $user->email = $data['email'];
+            $user->role = $data['role'];
+            if ($data['password'] !== null) {
+                $user->password = $data['password'];
+            } else {
+                $user->password = $password;
+            }
+            $user->save();
 
-        return redirect()->route('users.selves.selves-view')
-            ->with('status', "User {$user->email} was updated.");
+            return redirect()->route('users.selves.selves-view')
+                ->with('status', "User {$user->email} was updated.");
+        } catch (QueryException $excp) {
+            return redirect()->back()->withInput()->withErrors([
+                'alert' => $excp->errorInfo[2],
+            ]);
+        }
     }
 
     function delete(string $userCode): RedirectResponse
